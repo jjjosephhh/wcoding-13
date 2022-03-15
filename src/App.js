@@ -1,25 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import "./App.css";
+import AppContext from "./AppContext";
+import Filter from "./components/Filter";
+import Header from "./components/Header";
+import Products from "./components/Products";
+import UserContext from "./UserContext";
 
-function App() {
+const App = () => {
+  const [products, setProducts] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  const getData = async () => {
+    const productsResponse = await fetch("https://fakestoreapi.com/products");
+    const productsJson = await productsResponse.json();
+    console.log(productsJson);
+    setProducts(productsJson);
+    setFiltered(productsJson);
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <UserContext.Provider value={{ username: "jjj777", phone: "555-5555-5555" }}>
+      <AppContext.Provider value={{ 
+        products,
+        filtered,
+        setFiltered,
+        selectedCategory,
+        setSelectedCategory,
+      }}>
+        <Header />
+        <div className="container my-container">
+          <Filter />
+          <Products />
+        </div>
+      </AppContext.Provider>
+    </UserContext.Provider>
   );
-}
+};
 
 export default App;
